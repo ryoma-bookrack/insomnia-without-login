@@ -369,27 +369,6 @@ export async function render<T>(
   return renderResult;
 }
 
-interface RenderRequest<T extends Request | GrpcRequest | WebSocketRequest | SocketIORequest> {
-  request: T;
-}
-
-interface BaseRenderContextOptions {
-  environment?: string | Environment;
-  baseEnvironment?: Environment;
-  rootGlobalEnvironment?: Environment;
-  subGlobalEnvironment?: Environment;
-  userUploadEnvironment?: UserUploadEnvironment;
-  transientVariables?: Environment;
-  purpose?: RenderPurpose;
-  extraInfo?: ExtraRenderInfo;
-  ignoreUndefinedEnvVariable?: boolean;
-}
-
-export interface RenderContextOptions
-  extends BaseRenderContextOptions,
-    Partial<RenderRequest<Request | GrpcRequest | WebSocketRequest | SocketIORequest>> {
-  ancestors?: RenderContextAncestor[];
-}
 export async function getRenderContext({
   request,
   environment,
@@ -721,14 +700,6 @@ function _getOrderedEnvironmentKeys(finalRenderContext: Record<string, any>): st
   });
 }
 
-type RenderContextAncestor =
-  | Request
-  | GrpcRequest
-  | WebSocketRequest
-  | SocketIORequest
-  | RequestGroup
-  | Workspace
-  | Project;
 export async function getRenderContextAncestors(
   base?: Request | GrpcRequest | WebSocketRequest | SocketIORequest | Workspace,
 ): Promise<RenderContextAncestor[]> {
