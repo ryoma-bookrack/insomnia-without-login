@@ -10,9 +10,7 @@ import { userDataFolder } from '../config/config.json';
 import { getAppVersion, getProductName, isDevelopment, isMac } from './common/constants';
 import { database } from './common/database';
 import log, { initializeLogging } from './common/log';
-import { SegmentEvent, trackSegmentEvent } from './main/analytics';
 import { registerInsomniaProtocols } from './main/api.protocol';
-import { backupIfNewerVersionAvailable } from './main/backup';
 import { registerGitServiceAPI } from './main/git-service';
 import { ipcMainOn, ipcMainOnce, registerElectronHandlers } from './main/ipc/electron';
 import { registergRPCHandlers } from './main/ipc/grpc';
@@ -21,12 +19,9 @@ import { registerSecretStorageHandlers } from './main/ipc/secret-storage';
 import { registerCurlHandlers } from './main/network/curl';
 import { registerWebSocketHandlers } from './main/network/websocket';
 import { watchProxySettings } from './main/proxy';
-import { initializeSentry, sentryWatchAnalyticsEnabled } from './main/sentry';
 import { checkIfRestartNeeded } from './main/squirrel-startup';
-import * as updates from './main/updates';
 import * as windowUtils from './main/window-utils';
 import * as models from './models/index';
-import type { Project, RemoteProject } from './models/project';
 import type { Stats } from './models/stats';
 import type { ToastNotification } from './ui/components/toast';
 
@@ -39,8 +34,6 @@ const dataPath =
 app.setPath('userData', dataPath);
 
 initializeLogging();
-
-initializeSentry();
 
 registerInsomniaProtocols();
 
@@ -99,13 +92,10 @@ app.on('ready', async () => {
   // Init some important things first
   await database.init(models.types());
   await _createModelInstances();
-  sentryWatchAnalyticsEnabled();
   watchProxySettings();
   windowUtils.init();
   await _launchApp();
 
-  // Init the rest
-  await updates.init();
   // recursive = ignore already exists error
   await fs.mkdir(path.join(dataPath, 'responses'), { recursive: true });
 });
@@ -277,27 +267,7 @@ async function _trackStats() {
     launches: oldStats.launches + 1,
   });
 
-  const localProjects = await database.count<Project>(models.project.type, {
-    remoteId: null,
-    parentId: { $ne: null },
-    _id: { $ne: models.project.SCRATCHPAD_PROJECT_ID },
-  });
-
-  const remoteProjects = await database.count<RemoteProject>(models.project.type, {
-    remoteId: { $ne: null },
-    parentId: { $ne: null },
-  });
-
-  trackSegmentEvent(SegmentEvent.appStarted, {
-    localProjects,
-    remoteProjects,
-    createdRequests: stats.createdRequests,
-    deletedRequests: stats.deletedRequests,
-    executedRequests: stats.executedRequests,
-  });
-
   ipcMainOnce('halfSecondAfterAppStart', async () => {
-    backupIfNewerVersionAvailable();
     const { currentVersion, launches, lastVersion } = stats;
 
     const firstLaunch = launches === 1;

@@ -31,7 +31,6 @@ import { ErrorRoute } from './routes/error';
 import Onboarding from './routes/onboarding';
 import { Migrate } from './routes/onboarding.migrate';
 import Root from './routes/root';
-import { initializeSentry } from './sentry';
 
 const Organization = lazy(() => import('./routes/organization'));
 const Project = lazy(() => import('./routes/project'));
@@ -42,7 +41,6 @@ const Design = lazy(() => import('./routes/design'));
 const MockServer = lazy(() => import('./routes/mock-server'));
 const Environments = lazy(() => import('./routes/environments'));
 
-initializeSentry();
 initializeLogging();
 // Handy little helper
 document.body.setAttribute('data-platform', process.platform);
@@ -1137,53 +1135,6 @@ async function renderApp() {
                     ],
                   },
                 ],
-              },
-            ],
-          },
-          {
-            path: 'auth',
-            element: (
-              <Suspense fallback={<AppLoadingIndicator />}>
-                <Auth />
-              </Suspense>
-            ),
-            errorElement: (
-              <ErrorRoute defaultMessage="A temporarily unexpected error occurred, please reload to try again" />
-            ),
-            children: [
-              {
-                path: 'login',
-                action: async (...args) => (await import('./routes/auth.login')).action(...args),
-                element: <Login />,
-              },
-              {
-                path: 'logout',
-                action: async (...args) => (await import('./routes/auth.logout')).action(...args),
-              },
-              {
-                path: 'authorize',
-                action: async (...args) => (await import('./routes/auth.authorize')).action(...args),
-                element: <Authorize />,
-              },
-              {
-                path: 'updateVaultSalt',
-                action: async (...args) => (await import('./routes/auth.vaultKey')).updateVaultSaltAction(...args),
-              },
-              {
-                path: 'createVaultKey',
-                action: async (...args) => (await import('./routes/auth.vaultKey')).createVaultKeyAction(...args),
-              },
-              {
-                path: 'validateVaultKey',
-                action: async (...args) => (await import('./routes/auth.vaultKey')).validateVaultKeyAction(...args),
-              },
-              {
-                path: 'resetVaultKey',
-                action: async (...args) => (await import('./routes/auth.vaultKey')).resetVaultKeyAction(...args),
-              },
-              {
-                path: 'clearVaultKey',
-                action: async (...args) => (await import('./routes/auth.vaultKey')).clearVaultKeyAction(...args),
               },
             ],
           },

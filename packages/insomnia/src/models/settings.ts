@@ -1,7 +1,7 @@
 import { getAppDefaultDarkTheme, getAppDefaultLightTheme, getAppDefaultTheme } from '../common/constants';
 import { database as db } from '../common/database';
 import * as hotkeys from '../common/hotkeys';
-import { HttpVersions, type KeyboardShortcut, type Settings as BaseSettings, UpdateChannel } from '../common/settings';
+import { HttpVersions, type KeyboardShortcut, type Settings as BaseSettings } from '../common/settings';
 import type { BaseModel } from './index';
 
 export type Settings = BaseModel & BaseSettings;
@@ -36,7 +36,6 @@ export function init(): BaseSettings {
     editorKeyMap: 'default',
     enableKeyMapForInlineTextEditors: false,
     editorLineWrapping: true,
-    enableAnalytics: true,
     showVariableSourceAndValue: false,
     filterResponsesByEnv: false,
     followRedirects: true,
@@ -64,8 +63,7 @@ export function init(): BaseSettings {
     theme: getAppDefaultTheme(),
     // milliseconds
     timeout: 30_000,
-    updateAutomatically: true,
-    updateChannel: UpdateChannel.stable,
+    updateAutomatically: false,
     useBulkHeaderEditor: false,
     useBulkParametersEditor: false,
     validateAuthSSL: true,

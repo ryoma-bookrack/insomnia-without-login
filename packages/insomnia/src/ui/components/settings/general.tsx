@@ -10,21 +10,17 @@ import {
   updatesSupported,
 } from '../../../common/constants';
 import { docsKeyMaps } from '../../../common/documentation';
-import { type HttpVersion, HttpVersions, UpdateChannel } from '../../../common/settings';
-import { strings } from '../../../common/strings';
+import { type HttpVersion, HttpVersions } from '../../../common/settings';
 import { initNewOAuthSession } from '../../../network/o-auth-2/get-token';
 import { useRootLoaderData } from '../../routes/root';
 import { Link } from '../base/link';
-import { CheckForUpdatesButton } from '../check-for-updates-button';
 import { BooleanSetting } from './boolean-setting';
 import { EnumSetting } from './enum-setting';
 import { NumberSetting } from './number-setting';
 import { TextSetting } from './text-setting';
-import { VaultKeyPanel } from './vault-key-panel';
 
 export const General: FC = () => {
-  const { settings, userSession } = useRootLoaderData();
-  const isLoggedIn = Boolean(userSession.id);
+  const { settings } = useRootLoaderData();
 
   return (
     <div className="relative p-4">
@@ -239,32 +235,6 @@ export const General: FC = () => {
           help="If checked, validates SSL certificates during authentication flows."
         />
       </div>
-      {isLoggedIn && <VaultKeyPanel />}
-
-      {updatesSupported() && (
-        <Fragment>
-          <h2 className="sticky left-0 top-0 z-10 bg-[--color-bg] pb-2 pt-5 text-lg font-bold">Software Updates</h2>
-          <div className="flex w-full justify-between gap-2">
-            <BooleanSetting
-              label="Automatically download and install updates"
-              setting="updateAutomatically"
-              help="If disabled, receive a notification in-app when a new update is available."
-            />
-            <CheckForUpdatesButton />
-          </div>
-
-          <div className="for-row pad-top-sm">
-            <EnumSetting<UpdateChannel>
-              label="Update channel"
-              setting="updateChannel"
-              values={[
-                { value: UpdateChannel.stable, name: 'Release (recommended)' },
-                { value: UpdateChannel.beta, name: 'Early access (beta)' },
-              ]}
-            />
-          </div>
-        </Fragment>
-      )}
 
       {!updatesSupported() && (
         <>
@@ -281,22 +251,6 @@ export const General: FC = () => {
         help="Add a custom path to direct Insomnia to a different plugin directory."
         placeholder="~/.insomnia:/other/path"
       />
-
-      {!isLoggedIn && (
-        <>
-          <h2 className="sticky left-0 top-0 z-10 bg-[--color-bg] pb-2 pt-5 text-lg font-bold">Network Activity</h2>
-          <BooleanSetting label="Send Anonymous Usage Statistics" setting="enableAnalytics" disabled={isLoggedIn} />
-          <div className="py-2 pl-5 text-sm opacity-50">
-            Help Kong improve its products by sending anonymous data about features and plugins used, hardware and
-            software configuration, statistics on number of requests, {strings.collection.plural.toLowerCase()},{' '}
-            {strings.document.plural.toLowerCase()}, etc.
-          </div>
-          <div className="py-2 pl-5 text-sm opacity-50">
-            Please note that this will not include personal data or any sensitive information, such as request data,
-            names, etc.
-          </div>
-        </>
-      )}
     </div>
   );
 };

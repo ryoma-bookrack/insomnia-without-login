@@ -3,34 +3,8 @@ import path from 'node:path';
 
 import electron from 'electron';
 
-import appConfig from '../../config/config.json';
 import { version } from '../../package.json';
-import { getClientString, getUpdatesBaseURL } from '../common/constants';
-import * as models from '../models';
 
-export async function backupIfNewerVersionAvailable() {
-  try {
-    const settings = await models.settings.get();
-    console.log('[main] Checking for newer version than ', version);
-    const response = await electron.net.fetch(
-      `${getUpdatesBaseURL()}/builds/check/mac?v=${version}&app=${appConfig.appId}&channel=${settings.updateChannel}`,
-      {
-        method: 'GET',
-        headers: new Headers({
-          'X-Insomnia-Client': getClientString(),
-        }),
-      },
-    );
-    if (response) {
-      console.log('[main] Found newer version');
-      backup();
-      return;
-    }
-    console.log('[main] No newer version');
-  } catch (err) {
-    console.log('[main] Error checking for newer version', err);
-  }
-}
 
 export async function backup() {
   try {

@@ -55,18 +55,16 @@ export const Toast: FC = () => {
       return;
     }
     const stats = await models.stats.get();
-    const { disableUpdateNotification, updateAutomatically, updateChannel } = await models.settings.get();
+    const { disableUpdateNotification } = await models.settings.get();
     let updatedNotification: ToastNotification | null = null;
     // Try fetching user notification
     try {
       const data = {
         app: getAppId(),
-        autoUpdatesDisabled: !updateAutomatically,
         disableUpdateNotification,
         firstLaunch: stats.created,
         launches: stats.launches, // Used for account verification notifications
         platform: getAppPlatform(), // Used for CTAs / Informational notifications
-        updateChannel,
         updatesNotSupported: !updatesSupported(),
         version: getAppVersion(),
       };

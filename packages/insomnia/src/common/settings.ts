@@ -76,11 +76,6 @@ export const HttpVersions = {
 
 export type HttpVersion = ValueOf<typeof HttpVersions>;
 
-export enum UpdateChannel {
-  stable = 'stable',
-  beta = 'beta',
-}
-
 /** Gets a subset of Settings where the values match a condition */
 export type SettingsOfType<MatchType> = NonNullable<
   {
@@ -118,7 +113,6 @@ export interface Settings {
   editorLineWrapping: boolean;
 
   /** If true, Insomnia will send anonymous data about features and plugins used. */
-  enableAnalytics: boolean;
   filterResponsesByEnv: boolean;
   followRedirects: boolean;
   fontInterface: string | null;
@@ -147,7 +141,6 @@ export interface Settings {
   theme: string;
   timeout: number;
   updateAutomatically: boolean;
-  updateChannel: UpdateChannel;
   useBulkHeaderEditor: boolean;
   useBulkParametersEditor: boolean;
   validateAuthSSL: boolean;

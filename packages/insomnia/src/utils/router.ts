@@ -73,54 +73,8 @@ export const getInitialRouteForOrganization = async ({
 };
 
 export const getInitialEntry = async () => {
-  // If the user has not seen the onboarding, then show it
-  // Otherwise if the user is not logged in and has not logged in before, then show the login
-  // Otherwise if the user is logged in, then show the organization
-  try {
-    const hasSeenOnboardingV11 = Boolean(window.localStorage.getItem('hasSeenOnboardingV11'));
-
-    if (!hasSeenOnboardingV11) {
-      return '/onboarding';
-    }
-
-    const hasUserLoggedInBefore = window.localStorage.getItem('hasUserLoggedInBefore');
-
-    const user = await models.userSession.getOrCreate();
-    if (user.id) {
-      const organizations = JSON.parse(
-        localStorage.getItem(`${user.accountId}:organizations`) || '[]',
-      ) as Organization[];
-      const personalOrganization = findPersonalOrganization(organizations, user.accountId);
-      // If the personal org is not found in local storage go fetch from org index loader
-      if (!personalOrganization) {
-        return '/organization';
-      }
-
-      let organizationId = personalOrganization.id;
-
-      // Check if the user has a last visited organization
-      try {
-        const lastVisitedOrganizationId = localStorage.getItem('lastVisitedOrganizationId');
-        if (lastVisitedOrganizationId && organizations.find(o => o.id === lastVisitedOrganizationId)) {
-          organizationId = lastVisitedOrganizationId;
-        }
-      } catch (e) {}
-
-      return {
-        pathname: await getInitialRouteForOrganization({ organizationId, navigateToWorkspace: true }),
-        state: {
-          // async task need to execute when first entry
-          asyncTaskList: [AsyncTask.SyncOrganization, AsyncTask.MigrateProjects, AsyncTask.SyncProjects],
-        },
-      };
-    }
-
-    if (hasUserLoggedInBefore) {
-      return '/auth/login';
-    }
-
-    return '/organization/org_scratchpad/project/proj_scratchpad/workspace/wrk_scratchpad/debug';
-  } catch (e) {
-    return '/organization/org_scratchpad/project/proj_scratchpad/workspace/wrk_scratchpad/debug';
-  }
+  // 如果用户还没有看过引导页面，则显示引导页面
+  // 否则如果用户未登录且之前从未登录过，则显示登录页面
+  // 否则如果用户已登录，则显示组织页面
+  return '/organization/org_scratchpad/project/proj_scratchpad/workspace/wrk_scratchpad/debug';
 };
